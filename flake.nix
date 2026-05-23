@@ -41,7 +41,6 @@
               "_defconfig"
             ];
             board = "nice_nano_v2";
-            snippets = [ "zmk-usb-logging" ];
             zephyrDepsHash = "sha256-F03oJNHWmHlpFc1JHyvqX02WL+Pg6ZcNWpCaiDfJANA=";
             meta = {
               description = "ZMK firmware";
@@ -59,6 +58,7 @@
             // {
               name = "firmware";
               shield = "redox_%PART%";
+	      enableZmkStudio = true;
             }
           );
 
