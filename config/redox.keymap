@@ -42,7 +42,7 @@
 &none  &none   &none      &none      &none      &none   &kp F11                                 &kp F12    &none     &none     &none   &none      &none    &none
 &none  &none   &none      &none      &none      &none   &tog _NAV                               &tog _NAV  &kp LEFT  &kp DOWN  &kp UP  &kp RIGHT  &none    &none
 &none  &none   &kp LC(X)  &kp LC(C)  &kp LC(V)  &none   &kp PG_UP      &kp PG_DN      &kp HOME  &kp END    &none     &none     &none   &none      &none    &sys_reset
-&none  &none   &none      &none      &trans             &kp PAGE_DOWN  &kp PAGE_UP    &kp HOME  &kp END              &trans    &none   &none      &none    &none
+&none  &none   &none      &none      &trans             &kp PAGE_DOWN  &kp PAGE_UP    &kp HOME  &kp END              &trans    &none   &none      &none    &bootloader
             >;
 
             label = "Navigation";
