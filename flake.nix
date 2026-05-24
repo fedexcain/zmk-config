@@ -40,8 +40,8 @@
               ".yml"
               "_defconfig"
             ];
-            board = "nice_nano_v2";
-            zephyrDepsHash = "sha256-F03oJNHWmHlpFc1JHyvqX02WL+Pg6ZcNWpCaiDfJANA=";
+            board = "nice_nano//zmk";
+            zephyrDepsHash = "sha256-lGjFEg5K+YRrJmnC9vLyyj46jWR3ys40ohzUT4G63G8=";
             meta = {
               description = "ZMK firmware";
               license = lib.licenses.mit;
