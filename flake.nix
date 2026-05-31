@@ -6,7 +6,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
   outputs =
     {
       self,
@@ -24,7 +23,6 @@
           lib = nixpkgs.lib;
           zmkLib = zmk-nix.legacyPackages.${system};
 
-          # Attributes shared by every keyboard build
           common = {
             src = lib.sourceFilesBySuffices self [
               ".board"
@@ -41,7 +39,10 @@
               "_defconfig"
             ];
             board = "nice_nano//zmk";
-            zephyrDepsHash = "sha256-lGjFEg5K+YRrJmnC9vLyyj46jWR3ys40ohzUT4G63G8=";
+            # Adding zmk-dongle-screen changes the fetched west deps, so this
+            # hash WILL change. Build once with fakeHash, then paste the correct
+            # hash from the error. (Alternatively: `nix run .#update`.)
+            zephyrDepsHash = lib.fakeHash;
             meta = {
               description = "ZMK firmware";
               license = lib.licenses.mit;
@@ -49,20 +50,30 @@
             };
           };
 
-          # Normal split build.
-          # Role (central/peripheral) is determined by redox_left.conf and
-          # redox_right.conf — zmk-nix passes ZMK_CONFIG to west and ZMK
-          # picks up the per-side conf file by shield name automatically.
+          # Both halves are now peripherals — role is set in redox_left.conf and
+          # redox_right.conf. Studio lives on the central (the dongle), so
+          # enableZmkStudio is intentionally gone from here.
           firmware = zmkLib.buildSplitKeyboard (
             common
             // {
               name = "firmware";
               shield = "redox_%PART%";
-	      enableZmkStudio = true;
             }
           );
 
-          # Single settings-reset image, identical for both sides.
+          # The dongle: central role (via its shield's Kconfig.defconfig) + the
+          # YADS screen, on the XIAO. Phase 1 = no light sensor, no Studio.
+          dongle = zmkLib.buildKeyboard (
+            common
+            // {
+              name = "dongle";
+              board = "xiao_ble//zmk";
+              shield = "redox_dongle dongle_screen";
+              # snippets = [ "zmk-usb-logging" ]; # optional, debugging only
+            }
+          );
+
+          # Reset images — one per board family.
           resetfw = zmkLib.buildKeyboard (
             common
             // {
@@ -70,15 +81,19 @@
               shield = "settings_reset";
             }
           );
+          resetfw-dongle = zmkLib.buildKeyboard (
+            common
+            // {
+              name = "resetfw-dongle";
+              board = "xiao_ble//zmk";
+              shield = "settings_reset";
+            }
+          );
 
-          # flash.override { firmware = <drv>; } produces the upstream flash
-          # script wired to a specific firmware derivation.
           flash = zmk-nix.packages.${system}.flash.override { inherit firmware; };
+          flash-dongle = zmk-nix.packages.${system}.flash.override { firmware = dongle; };
+          flash-reset-dongle = zmk-nix.packages.${system}.flash.override { firmware = resetfw-dongle; };
 
-          # For resetfw we need to flash the same single image twice (one per
-          # side) in sequence. The upstream flash script runs once when the
-          # firmware derivation has no 'parts' attribute (buildKeyboard case),
-          # so we wrap it in a script that simply calls it twice.
           flash-reset =
             let
               flashOnce = zmk-nix.packages.${system}.flash.override { firmware = resetfw; };
@@ -97,20 +112,22 @@
                 zmk-uf2-flash
               '';
             };
-
         in
         {
           default = firmware;
           inherit
             firmware
+            dongle
             resetfw
+            resetfw-dongle
             flash
+            flash-dongle
             flash-reset
+            flash-reset-dongle
             ;
           update = zmk-nix.packages.${system}.update;
         }
       );
-
       devShells = forAllSystems (system: {
         default = zmk-nix.devShells.${system}.default;
       });

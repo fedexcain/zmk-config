@@ -2,6 +2,8 @@ manifest:
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
+    - name: janpfischer
+      url-base: https://github.com/janpfischer
   projects:
     - name: zmk
       remote: zmkfirmware
@@ -31,5 +33,8 @@ manifest:
           - openthread
           - edtt
           - trusted-firmware-m
+    - name: zmk-dongle-screen
+      remote: janpfischer
+      revision: upgrade-4.1 # pin to a commit SHA later for full reproducibility
   self:
     path: config
