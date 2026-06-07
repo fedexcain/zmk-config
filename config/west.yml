@@ -7,7 +7,7 @@ manifest:
   projects:
     - name: zmk
       remote: zmkfirmware
-      revision: 753d8b467125fe860eec05ee71cb7ebefa08fba6 # main
+      revision: 773dec58eaacaef4703b3e4595e50bd71f6cad3d # main
       import: app/west.yml
     - name: zephyr
       remote: zmkfirmware
@@ -35,6 +35,6 @@ manifest:
           - trusted-firmware-m
     - name: zmk-dongle-screen
       remote: janpfischer
-      revision: upgrade-4.1 # pin to a commit SHA later for full reproducibility
+      revision:  # pin to a commit SHA later for full reproducibility
   self:
     path: config
